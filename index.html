@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>آن لائن قرآن اکیڈمی</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gd:#1a4731;--gm:#2d6a4f;--gl:#52b788;
+  --gold:#c9a84c;--gold-l:#f0d080;
+  --cream:#fdfaf3;--cream-d:#f0ead8;
+  --text:#1c1c1c;--soft:#4a4a4a;
+  --white:#fff;--red:#c05050;--blue:#4a80b4;
+  --sh:0 2px 12px rgba(0,0,0,0.08);--r:14px;
+}
+body{font-family:'Noto Nastaliq Urdu',serif;background:var(--cream);color:var(--text);min-height:100vh;padding-bottom:80px}
+
+/* LOCK SCREEN */
+#lockScreen{position:fixed;inset:0;background:linear-gradient(135deg,var(--gd),var(--gm));z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:30px}
+#lockScreen h2{color:var(--gold-l);font-size:1.4rem;text-align:center;line-height:2}
+#lockScreen .lock-icon{font-size:4rem}
+#lockScreen input{width:100%;max-width:280px;padding:14px;border:2px solid var(--gold);border-radius:var(--r);background:rgba(255,255,255,0.1);color:white;font-size:1.2rem;text-align:center;letter-spacing:8px;outline:none;font-family:monospace}
+#lockScreen input::placeholder{letter-spacing:2px;font-family:'Noto Nastaliq Urdu',serif;font-size:0.85rem}
+#lockErr{color:#ffaaaa;font-size:0.78rem;min-height:20px}
+
+/* HEADER */
+header{background:linear-gradient(135deg,var(--gd),var(--gm));color:var(--white);padding:14px 18px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 3px 16px rgba(0,0,0,0.2);position:sticky;top:0;z-index:100}
+header h1{font-size:1.15rem;font-weight:700;color:var(--gold-l);line-height:1.6}
+header span{font-size:0.72rem;color:rgba(255,255,255,0.75)}
+.hicon{font-size:1.8rem;cursor:pointer}
+
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:0;right:0;background:var(--white);display:flex;border-top:2px solid var(--cream-d);z-index:100;box-shadow:0 -2px 12px rgba(0,0,0,0.08)}
+.bnav button{flex:1;padding:10px 4px 8px;border:none;background:transparent;font-family:'Noto Nastaliq Urdu',serif;font-size:0.62rem;color:var(--soft);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;border-top:3px solid transparent;transition:all 0.2s}
+.bnav button .ni{font-size:1.2rem}
+.bnav button.active{color:var(--gd);border-top-color:var(--gold);font-weight:700}
+
+/* PAGES */
+.page{display:none;padding:14px}
+.page.active{display:block}
+
+/* CARDS & COMMON */
+.card{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;margin-bottom:12px}
+.banner{background:linear-gradient(135deg,var(--gd),var(--gm));border-radius:var(--r);padding:18px;margin-bottom:14px;text-align:center;color:white}
+.banner .ayat{font-size:1rem;color:var(--gold-l);line-height:2;margin-bottom:4px}
+.banner .sub{font-size:0.72rem;color:rgba(255,255,255,0.8);line-height:1.8}
+.sec-title{font-size:0.95rem;font-weight:700;color:var(--gd);margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--gold)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat-card{background:var(--white);border-radius:var(--r);padding:14px;text-align:center;box-shadow:var(--sh);border-top:4px solid var(--gl)}
+.stat-card.gold{border-top-color:var(--gold)}
+.stat-card.red{border-top-color:var(--red)}
+.stat-card.blue{border-top-color:var(--blue)}
+.stat-card .num{font-size:1.8rem;font-weight:700;color:var(--gd);line-height:1.2}
+.stat-card.gold .num{color:#8a6820}
+.stat-card.red .num{color:var(--red)}
+.stat-card.blue .num{color:var(--blue)}
+.stat-card .lbl{font-size:0.7rem;color:var(--soft);margin-top:3px;line-height:1.8}
+.badge{font-size:0.65rem;padding:3px 9px;border-radius:20px;font-weight:600}
+.badge.green{background:#d4f0e0;color:var(--gd)}
+.badge.orange{background:#fdefd6;color:#8a5a10}
+.badge.red{background:#fde0e0;color:#8a2020}
+.badge.blue{background:#dde8ff;color:#2a50a0}
+.badge.gold{background:#fdf3d4;color:#8a6820}
+
+/* BUTTONS */
+.btn{background:linear-gradient(135deg,var(--gd),var(--gm));color:white;border:none;border-radius:var(--r);padding:11px 18px;font-family:'Noto Nastaliq Urdu',serif;font-size:0.85rem;cursor:pointer;width:100%;margin-bottom:10px;font-weight:600;box-shadow:0 3px 10px rgba(45,106,79,0.3);transition:transform 0.1s}
+.btn:active{transform:scale(0.98)}
+.btn.gold{background:linear-gradient(135deg,var(--gold),#e8c060);color:var(--gd)}
+.btn.red{background:linear-gradient(135deg,#c05050,#e07070);color:white}
+.btn.outline{background:white;color:var(--gd);border:2px solid var(--gd);box-shadow:none}
+.btn.sm{padding:7px 12px;font-size:0.73rem;margin-bottom:0;width:auto}
+.iBtn{width:34px;height:34px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:transform 0.1s;flex-shrink:0}
+.iBtn:active{transform:scale(0.9)}
+.iBtn.wa{background:#d4f0e0}
+.iBtn.inf{background:#dde8ff}
+.iBtn.del{background:#fde0e0}
+.iBtn.star{background:#fdf3d4}
+
+/* FORM */
+.fg{margin-bottom:12px}
+.fl{display:block;font-size:0.78rem;font-weight:600;color:var(--text);margin-bottom:5px}
+.fi,.fs{width:100%;padding:10px 13px;border:2px solid var(--cream-d);border-radius:10px;font-family:'Noto Nastaliq Urdu',serif;font-size:0.85rem;background:var(--cream);outline:none;text-align:right;transition:border-color 0.2s}
+.fi:focus,.fs:focus{border-color:var(--gl)}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.search{width:100%;padding:10px 14px;border:2px solid var(--cream-d);border-radius:var(--r);font-family:'Noto Nastaliq Urdu',serif;font-size:0.85rem;background:var(--white);margin-bottom:12px;outline:none;text-align:right}
+.search:focus{border-color:var(--gl)}
+
+/* STUDENT CARD */
+.scard{background:var(--white);border-radius:var(--r);padding:12px 14px;margin-bottom:10px;box-shadow:var(--sh);display:flex;align-items:center;gap:10px}
+.avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gm),var(--gl));display:flex;align-items:center;justify-content:center;color:white;font-size:1.2rem;flex-shrink:0}
+.sinfo{flex:1;min-width:0}
+.sname{font-weight:700;font-size:0.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sdet{font-size:0.7rem;color:var(--soft);margin-top:2px;line-height:1.8}
+.sacts{display:flex;gap:5px;flex-shrink:0}
+
+/* TABS */
+.tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;scrollbar-width:none;padding-bottom:2px}
+.tab{flex-shrink:0;padding:7px 13px;border-radius:20px;border:2px solid var(--cream-d);background:var(--white);font-family:'Noto Nastaliq Urdu',serif;font-size:0.73rem;cursor:pointer;color:var(--soft);transition:all 0.2s;white-space:nowrap}
+.tab.active{background:var(--gd);color:white;border-color:var(--gd)}
+
+/* LIST ITEM */
+.litem{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--cream-d)}
+.litem:last-child{border-bottom:none}
+
+/* PROGRESS BAR */
+.pbar-bg{height:9px;background:var(--cream-d);border-radius:9px;overflow:hidden;margin:8px 0 4px}
+.pbar-fill{height:100%;border-radius:9px;background:linear-gradient(90deg,var(--gl),var(--gd));transition:width 0.5s}
+
+/* STARS */
+.stars{display:flex;gap:3px;font-size:1.3rem}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:flex-end;justify-content:center}
+.overlay.open{display:flex}
+.modal{background:var(--white);border-radius:20px 20px 0 0;padding:20px 18px;width:100%;max-height:92vh;overflow-y:auto;animation:up 0.3s ease}
+@keyframes up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mtitle{font-size:1rem;font-weight:700;color:var(--gd);margin-bottom:16px;text-align:center;padding-bottom:10px;border-bottom:2px solid var(--cream-d)}
+.macts{display:flex;gap:8px;margin-top:14px}
+.btn-cancel{flex:1;padding:11px;border:2px solid var(--cream-d);border-radius:var(--r);background:var(--white);font-family:'Noto Nastaliq Urdu',serif;font-size:0.85rem;cursor:pointer;color:var(--soft)}
+.btn-save{flex:2;padding:11px;border:none;border-radius:var(--r);background:linear-gradient(135deg,var(--gd),var(--gm));color:white;font-family:'Noto Nastaliq Urdu',serif;font-size:0.85rem;cursor:pointer;font-weight:600}
+
+/* ANNOUNCEMENT */
+.ann-card{background:var(--white);border-radius:var(--r);padding:14px;margin-bottom:10px;box-shadow:var(--sh);border-right:5px solid var(--gold)}
+.ann-card.urgent{border-right-color:var(--red)}
+
+/* FEE RECEIPT */
+.receipt{background:var(--white);border:2px dashed var(--gd);border-radius:var(--r);padding:20px;margin-top:10px;text-align:center}
+.receipt .rtitle{font-size:1.1rem;font-weight:700;color:var(--gd);margin-bottom:12px}
+.receipt table{width:100%;border-collapse:collapse;font-size:0.78rem;text-align:right}
+.receipt td{padding:6px 8px;border-bottom:1px solid var(--cream-d)}
+.receipt .total{font-weight:700;color:var(--gd);font-size:0.9rem}
+
+/* CERTIFICATE */
+.cert{background:linear-gradient(135deg,#fff9e6,#fff);border:3px solid var(--gold);border-radius:var(--r);padding:24px 18px;text-align:center;margin-top:10px}
+.cert .ctitle{font-size:1.3rem;font-weight:700;color:var(--gd);line-height:2;margin-bottom:8px}
+.cert .cname{font-size:1.1rem;color:var(--gold);font-weight:700;margin:10px 0}
+.cert .cseal{font-size:3rem;margin:10px 0}
+
+/* TOAST */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--gd);color:white;padding:10px 22px;border-radius:30px;font-size:0.78rem;transition:transform 0.3s;z-index:300;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,0.2)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* WA FLOAT */
+.wa-float{position:fixed;bottom:90px;left:16px;z-index:400;width:54px;height:54px;border-radius:50%;background:#25d366;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(37,211,102,0.5);text-decoration:none;font-size:1.6rem;transition:transform 0.2s}
+.wa-float:hover{transform:scale(1.1)}
+.wa-tip{position:fixed;bottom:152px;left:10px;z-index:399;background:var(--gd);color:white;font-family:'Noto Nastaliq Urdu',serif;font-size:0.65rem;padding:5px 10px;border-radius:20px;white-space:nowrap;box-shadow:var(--sh)}
+
+/* EMPTY */
+.empty{text-align:center;padding:36px 20px;color:var(--soft)}
+.empty .ei{font-size:2.8rem;margin-bottom:8px}
+.empty p{font-size:0.8rem;line-height:2}
+
+/* FEE INFO BOX */
+.fee-info-box{background:linear-gradient(135deg,var(--gd),var(--gm));border-radius:var(--r);padding:14px;margin-bottom:12px;color:white;text-align:center}
+.fee-info-box .fa{font-size:1.5rem;font-weight:700;color:var(--gold-l)}
+.fee-info-box .fl2{font-size:0.68rem;color:rgba(255,255,255,0.85);margin-top:3px;line-height:1.8}
+
+/* ZOOM BOX */
+.zoom-box{background:linear-gradient(135deg,#1a73e8,#0d47a1);border-radius:var(--r);padding:14px;margin-bottom:10px;color:white;display:flex;justify-content:space-between;align-items:center}
+.zoom-box .zt{font-size:0.85rem;font-weight:700}
+.zoom-box .zs{font-size:0.7rem;color:rgba(255,255,255,0.8);margin-top:3px}
+.zoom-btn{background:white;color:#1a73e8;border:none;border-radius:8px;padding:8px 14px;font-family:'Noto Nastaliq Urdu',serif;font-size:0.73rem;cursor:pointer;font-weight:700}
+
+/* ATTENDANCE */
+.att-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--cream-d)}
+.att-btns{display:flex;gap:5px}
+.att-btn{padding:5px 10px;border-radius:8px;border:2px solid var(--cream-d);font-family:'Noto Nastaliq Urdu',serif;font-size:0.65rem;cursor:pointer;background:var(--white);transition:all 0.15s}
+.att-btn.p.sel{background:#d4f0e0;border-color:var(--gl);color:var(--gd);font-weight:700}
+.att-btn.a.sel{background:#fde0e0;border-color:var(--red);color:var(--red);font-weight:700}
+.att-btn.l.sel{background:#fdefd6;border-color:#e0a030;color:#8a5a10;font-weight:700}
+
+@media print{.bnav,.wa-float,.wa-tip,.btn,.iBtn{display:none!important}.receipt,.cert{border:2px solid #333}}
+</style>
+</head>
+<body>
+
+<!-- LOCK SCREEN -->
+<div id="lockScreen">
+  <div class="lock-icon">🔐</div>
+  <h2>آن لائن قرآن اکیڈمی<br><span style="font-size:0.85rem;color:var(--gold-l)">پاس ورڈ داخل کریں</span></h2>
+  <input type="password" id="pinInput" placeholder="پاس ورڈ لکھیں" maxlength="20" onkeyup="if(event.key==='Enter')checkPin()">
+  <button class="btn" style="max-width:280px;margin:0" onclick="checkPin()">🔓 داخل ہوں</button>
+  <div id="lockErr"></div>
+  <div style="font-size:0.65rem;color:rgba(255,255,255,0.5);margin-top:8px">پہلی بار پاس ورڈ: 1234</div>
+</div>
+
+<header>
+  <div>
+    <h1>🕌 آن لائن قرآن اکیڈمی</h1>
+    <span id="todayDate"></span>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center">
+    <span class="hicon" onclick="showPage('settings')" title="ترتیبات">⚙️</span>
+    <span class="hicon" onclick="lockApp()" title="لاک">🔒</span>
+  </div>
+</header>
+
+<!-- BOTTOM NAV -->
+<nav class="bnav">
+  <button class="active" onclick="showPage('dashboard',this)"><span class="ni">🏠</span>ہوم</button>
+  <button onclick="showPage('students',this)"><span class="ni">👥</span>طلباء</button>
+  <button onclick="showPage('attend',this)"><span class="ni">📋</span>حاضری</button>
+  <button onclick="showPage('fees',this)"><span class="ni">💰</span>فیس</button>
+  <button onclick="showPage('progress',this)"><span class="ni">📊</span>ترقی</button>
+  <button onclick="showPage('announce',this)"><span class="ni">📢</span>اعلان</button>
+  <button onclick="showPage('applications',this)"><span class="ni">📝</span>درخواست</button>
+</nav>
+
+<!-- ===== DASHBOARD ===== -->
+<div id="page-dashboard" class="page active">
+  <div class="banner">
+    <div class="ayat">﴿ وَعَلَّمَكَ مَا لَمْ تَكُن تَعْلَمُ ﴾</div>
+    <div class="sub">اور آپ کو وہ کچھ سکھایا جو آپ نہیں جانتے تھے</div>
+  </div>
+  <div class="grid2">
+    <div class="stat-card"><div class="num" id="st-students">0</div><div class="lbl">کل طلباء</div></div>
+    <div class="stat-card gold"><div class="num" id="st-today">0</div><div class="lbl">آج کی کلاسیں</div></div>
+    <div class="stat-card blue"><div class="num" id="st-rec">0</div><div class="lbl">فیس موصول</div></div>
+    <div class="stat-card red"><div class="num" id="st-pend">0</div><div class="lbl">فیس باقی</div></div>
+  </div>
+
+  <!-- Zoom/Meet -->
+  <div class="sec-title">🎥 کلاس لنک</div>
+  <div id="zoomBoxes" class="card" style="padding:14px">
+    <div style="font-size:0.78rem;color:var(--soft);text-align:center;padding:10px">ترتیبات میں کلاس لنک شامل کریں</div>
+  </div>
+
+  <div class="sec-title">📅 آج کی کلاسیں</div>
+  <div class="card" id="todayList"><div class="empty"><div class="ei">📚</div><p>آج کوئی کلاس نہیں</p></div></div>
+
+  <div class="sec-title">⭐ ماہ کے بہترین طالب علم</div>
+  <div class="card" id="topStudent"><div class="litem"><span style="color:var(--soft);font-size:0.78rem">ابھی کوئی ڈیٹا نہیں</span></div></div>
+</div>
+
+<!-- ===== STUDENTS ===== -->
+<div id="page-students" class="page">
+  <button class="btn" onclick="openM('addStudent')">➕ نیا طالب علم شامل کریں</button>
+  <input class="search" placeholder="🔍 تلاش کریں..." oninput="searchS(this.value)">
+  <div id="studentList"></div>
+</div>
+
+<!-- ===== ATTENDANCE ===== -->
+<div id="page-attend" class="page">
+  <div class="sec-title">📋 آج کی حاضری — <span id="attDate"></span></div>
+  <div class="card" id="attList"><div class="empty"><div class="ei">📋</div><p>کوئی طالب علم نہیں</p></div></div>
+  <button class="btn" onclick="saveAttendance()" style="margin-top:6px">💾 حاضری محفوظ کریں</button>
+  <div class="sec-title" style="margin-top:14px">📊 حاضری کا ریکارڈ</div>
+  <div id="attHistory" class="card"></div>
+</div>
+
+<!-- ===== FEES ===== -->
+<div id="page-fees" class="page">
+  <div class="grid2">
+    <div class="stat-card"><div class="num" style="color:var(--gd)" id="f-rec">0</div><div class="lbl">موصول (روپے)</div></div>
+    <div class="stat-card red"><div class="num" id="f-pend">0</div><div class="lbl">باقی (روپے)</div></div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="fTab('all',this)">سب</button>
+    <button class="tab" onclick="fTab('unpaid',this)">باقی</button>
+    <button class="tab" onclick="fTab('paid',this)">ادا شدہ</button>
+  </div>
+  <div id="feeList"></div>
+</div>
+
+<!-- ===== PROGRESS ===== -->
+<div id="page-progress" class="page">
+  <div class="sec-title">📊 طلباء کی ترقی</div>
+  <div id="progressList"></div>
+</div>
+
+<!-- ===== ANNOUNCEMENTS ===== -->
+<div id="page-announce" class="page">
+  <button class="btn" onclick="openM('addAnn')">📢 نیا اعلان</button>
+  <div id="annList"></div>
+</div>
+
+<!-- ===== APPLICATIONS ===== -->
+<div id="page-applications" class="page">
+  <div class="tabs">
+    <button class="tab active" id="aTab-pending" onclick="aTab('pending',this)">⏳ نئی</button>
+    <button class="tab" id="aTab-accepted" onclick="aTab('accepted',this)">✅ منظور</button>
+    <button class="tab" id="aTab-rejected" onclick="aTab('rejected',this)">❌ مسترد</button>
+  </div>
+
+  <!-- Apply Form (public) -->
+  <div id="applyBox" style="display:none">
+    <div class="banner">
+      <div class="ayat" style="font-size:0.9rem">📝 داخلہ فارم</div>
+      <div class="sub">تمام خانے پُر کریں — ہم جلد رابطہ کریں گے</div>
+    </div>
+    <div class="fee-info-box">
+      <div style="font-size:0.72rem;color:var(--gold-l);margin-bottom:4px">💰 کورس فیس</div>
+      <div class="fa">۵,۵۰۰ روپے ماہانہ</div>
+      <div class="fl2">تمام کورسز کے لیے یکساں فیس<br>ادائیگی کلاس شروع ہونے کے بعد</div>
+    </div>
+    <div class="fg"><label class="fl">📛 پورا نام</label><input class="fi" id="ap-name" placeholder="مثال: محمد احمد"></div>
+    <div class="frow">
+      <div class="fg"><label class="fl">📱 واٹس ایپ</label><input class="fi" id="ap-phone" placeholder="03XX-XXXXXXX" type="tel"></div>
+      <div class="fg"><label class="fl">🎂 عمر</label><input class="fi" id="ap-age" placeholder="سال" type="number"></div>
+    </div>
+    <div class="fg">
+      <label class="fl">📖 قرآن کا مقام</label>
+      <select class="fs" id="ap-level">
+        <option value="بالکل نیا">بالکل نیا (قاعدہ سے شروع)</option>
+        <option value="ناظرہ">ناظرہ قرآن</option>
+        <option value="حفظ">حفظ قرآن</option>
+        <option value="تجوید">تجوید سیکھنا ہے</option>
+        <option value="ترجمہ">ترجمہ / تفسیر</option>
+      </select>
+    </div>
+    <div class="frow">
+      <div class="fg"><label class="fl">📅 پسندیدہ دن</label>
+        <select class="fs" id="ap-day"><option>پیر</option><option>منگل</option><option>بدھ</option><option>جمعرات</option><option>جمعہ</option><option>ہفتہ</option><option>اتوار</option></select>
+      </div>
+      <div class="fg"><label class="fl">⏰ وقت</label><input class="fi" id="ap-time" type="time"></div>
+    </div>
+    <div class="fg"><label class="fl">💬 اضافی بات</label><input class="fi" id="ap-note" placeholder="اختیاری..."></div>
+    <button class="btn" onclick="submitApp()">📨 درخواست بھیجیں</button>
+    <button class="btn outline" onclick="showAppTeacher()">← واپس</button>
+  </div>
+
+  <!-- Teacher view -->
+  <div id="appTeacher">
+    <button class="btn gold" onclick="showApplyForm()">📋 داخلہ فارم کھولیں</button>
+    <button class="btn" style="background:linear-gradient(135deg,#25d366,#128C7E)" onclick="shareViaWA()">📤 واٹس ایپ پر لنک شیئر کریں</button>
+    <div id="qrBox" style="text-align:center;padding:10px;display:none">
+      <div class="sec-title">QR کوڈ — اسکین کریں</div>
+      <div id="qrCode" style="display:inline-block;padding:10px;background:white;border-radius:10px"></div>
+    </div>
+    <div id="appList"></div>
+  </div>
+</div>
+
+<!-- ===== SETTINGS ===== -->
+<div id="page-settings" class="page">
+  <div class="sec-title">⚙️ ترتیبات</div>
+
+  <div class="card" style="padding:14px;margin-bottom:12px">
+    <div class="sec-title" style="font-size:0.85rem">🔒 پاس ورڈ تبدیل کریں</div>
+    <div class="fg"><label class="fl">پرانا پاس ورڈ</label><input class="fi" type="password" id="old-pin"></div>
+    <div class="fg"><label class="fl">نیا پاس ورڈ</label><input class="fi" type="password" id="new-pin"></div>
+    <div class="fg"><label class="fl">تصدیق</label><input class="fi" type="password" id="cnf-pin"></div>
+    <button class="btn" onclick="changePin()">🔒 پاس ورڈ محفوظ کریں</button>
+  </div>
+
+  <div class="card" style="padding:14px;margin-bottom:12px">
+    <div class="sec-title" style="font-size:0.85rem">🎥 کلاس لنک (زوم / گوگل میٹ)</div>
+    <div class="fg"><label class="fl">زوم لنک</label><input class="fi" id="zoomLink" placeholder="https://zoom.us/j/..."></div>
+    <div class="fg"><label class="fl">میٹنگ آئی ڈی</label><input class="fi" id="zoomId" placeholder="مثال: 123 456 7890"></div>
+    <div class="fg"><label class="fl">پاس ورڈ (میٹنگ)</label><input class="fi" id="zoomPass" placeholder="میٹنگ پاس ورڈ"></div>
+    <div class="fg"><label class="fl">گوگل میٹ لنک</label><input class="fi" id="meetLink" placeholder="https://meet.google.com/..."></div>
+    <button class="btn" onclick="saveClassLinks()">💾 محفوظ کریں</button>
+  </div>
+
+  <div class="card" style="padding:14px;margin-bottom:12px">
+    <div class="sec-title" style="font-size:0.85rem">📱 واٹس ایپ نمبر</div>
+    <div class="fg"><label class="fl">آپ کا نمبر</label><input class="fi" id="myWA" placeholder="03XXXXXXXXX"></div>
+    <button class="btn" onclick="saveWA()">💾 محفوظ کریں</button>
+  </div>
+</div>
+
+<!-- ===== MODALS ===== -->
+
+<!-- Add Student -->
+<div class="overlay" id="m-addStudent">
+  <div class="modal">
+    <div class="mtitle">نیا طالب علم شامل کریں</div>
+    <div class="fg"><label class="fl">📛 نام</label><input class="fi" id="s-name" placeholder="پورا نام"></div>
+    <div class="frow">
+      <div class="fg"><label class="fl">📱 واٹس ایپ</label><input class="fi" id="s-phone" placeholder="03XX-XXXXXXX" type="tel"></div>
+      <div class="fg"><label class="fl">🎂 عمر</label><input class="fi" id="s-age" placeholder="سال" type="number"></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><label class="fl">📅 دن</label>
+        <select class="fs" id="s-day"><option>پیر</option><option>منگل</option><option>بدھ</option><option>جمعرات</option><option>جمعہ</option><option>ہفتہ</option><option>اتوار</option></select>
+      </div>
+      <div class="fg"><label class="fl">⏰ وقت</label><input class="fi" id="s-time" type="time"></div>
+    </div>
+    <div class="fg"><label class="fl">📖 سبق</label><input class="fi" id="s-lesson" placeholder="مثال: سورۃ الفاتحہ"></div>
+    <div class="macts">
+      <button class="btn-cancel" onclick="closeM('addStudent')">منسوخ</button>
+      <button class="btn-save" onclick="addStudent()">محفوظ کریں ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- Student Detail -->
+<div class="overlay" id="m-studentDetail">
+  <div class="modal">
+    <div class="mtitle" id="sd-title">تفصیل</div>
+    <div id="sd-content"></div>
+    <div class="macts"><button class="btn-cancel" onclick="closeM('studentDetail')">بند کریں</button></div>
+  </div>
+</div>
+
+<!-- Fee Receipt -->
+<div class="overlay" id="m-receipt">
+  <div class="modal">
+    <div class="mtitle">💰 فیس رسید</div>
+    <div id="receiptContent"></div>
+    <div class="macts">
+      <button class="btn-cancel" onclick="closeM('receipt')">بند کریں</button>
+      <button class="btn-save" onclick="window.print()">🖨️ پرنٹ کریں</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Announcement -->
+<div class="overlay" id="m-addAnn">
+  <div class="modal">
+    <div class="mtitle">📢 نیا اعلان</div>
+    <div class="fg"><label class="fl">عنوان</label><input class="fi" id="ann-title" placeholder="اعلان کا عنوان"></div>
+    <div class="fg"><label class="fl">تفصیل</label><input class="fi" id="ann-body" placeholder="تفصیل لکھیں..."></div>
+    <div class="fg">
+      <label class="fl">قسم</label>
+      <select class="fs" id="ann-type">
+        <option value="normal">عام اطلاع</option>
+        <option value="urgent">فوری / اہم</option>
+        <option value="holiday">چھٹی کا اعلان</option>
+      </select>
+    </div>
+    <div class="macts">
+      <button class="btn-cancel" onclick="closeM('addAnn')">منسوخ</button>
+      <button class="btn-save" onclick="addAnn()">شائع کریں 📢</button>
+    </div>
+  </div>
+</div>
+
+<!-- Application Detail -->
+<div class="overlay" id="m-appDetail">
+  <div class="modal">
+    <div class="mtitle" id="ad-title">درخواست</div>
+    <div id="ad-content"></div>
+    <div class="macts"><button class="btn-cancel" onclick="closeM('appDetail')">بند کریں</button></div>
+  </div>
+</div>
+
+<!-- Certificate -->
+<div class="overlay" id="m-cert">
+  <div class="modal">
+    <div class="mtitle">🏆 سرٹیفکیٹ</div>
+    <div id="certContent"></div>
+    <div class="macts">
+      <button class="btn-cancel" onclick="closeM('cert')">بند کریں</button>
+      <button class="btn-save" onclick="window.print()">🖨️ پرنٹ کریں</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<a class="wa-float" id="waFloat" href="#" target="_blank">💬</a>
+<div class="wa-tip" id="waTip">واٹس ایپ پر رابطہ کریں</div>
+
+<script>
+// ===== DATA =====
+let students = JSON.parse(localStorage.getItem('qS')||'[]');
+let attendance = JSON.parse(localStorage.getItem('qA')||'{}');
+let applications = JSON.parse(localStorage.getItem('qApp')||'[]');
+let announcements = JSON.parse(localStorage.getItem('qAnn')||'[]');
+let settings = JSON.parse(localStorage.getItem('qSet')||'{"pin":"1234","zoom":"","zoomId":"","zoomPass":"","meet":"","wa":"923124619481"}');
+let currentFeeTab = 'all';
+let currentAppTab = 'pending';
+const COURSE_FEE = 5500;
+const DAYS = ['اتوار','پیر','منگل','بدھ','جمعرات','جمعہ','ہفتہ'];
+const MONTHS = ['جنوری','فروری','مارچ','اپریل','مئی','جون','جولائی','اگست','ستمبر','اکتوبر','نومبر','دسمبر'];
+const today = DAYS[new Date().getDay()];
+const todayKey = new Date().toISOString().split('T')[0];
+
+function save(){ localStorage.setItem('qS',JSON.stringify(students)); }
+function saveA(){ localStorage.setItem('qA',JSON.stringify(attendance)); }
+function saveApp(){ localStorage.setItem('qApp',JSON.stringify(applications)); }
+function saveAnn(){ localStorage.setItem('qAnn',JSON.stringify(announcements)); }
+function saveSets(){ localStorage.setItem('qSet',JSON.stringify(settings)); }
+
+// ===== LOCK =====
+function checkPin(){
+  const v = document.getElementById('pinInput').value;
+  if(v === settings.pin){
+    document.getElementById('lockScreen').style.display='none';
+    initApp();
+  } else {
+    document.getElementById('lockErr').textContent='❌ پاس ورڈ غلط ہے';
+    document.getElementById('pinInput').value='';
+  }
+}
+function lockApp(){
+  document.getElementById('lockScreen').style.display='flex';
+  document.getElementById('pinInput').value='';
+  document.getElementById('lockErr').textContent='';
+}
+function changePin(){
+  const o=document.getElementById('old-pin').value;
+  const n=document.getElementById('new-pin').value;
+  const c=document.getElementById('cnf-pin').value;
+  if(o!==settings.pin){showToast('❌ پرانا پاس ورڈ غلط');return;}
+  if(!n){showToast('⚠️ نیا پاس ورڈ لکھیں');return;}
+  if(n!==c){showToast('❌ پاس ورڈ مطابق نہیں');return;}
+  settings.pin=n; saveSets();
+  ['old-pin','new-pin','cnf-pin'].forEach(id=>document.getElementById(id).value='');
+  showToast('✅ پاس ورڈ تبدیل ہو گیا');
+}
+
+// ===== NAVIGATION =====
+function showPage(id, btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.bnav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(id==='students') renderStudents(students);
+  if(id==='attend') renderAttendance();
+  if(id==='fees') renderFees();
+  if(id==='progress') renderProgress();
+  if(id==='announce') renderAnn();
+  if(id==='applications') renderApps();
+  if(id==='settings') loadSettings();
+  if(id==='dashboard') renderDashboard();
+}
+
+// ===== TOAST =====
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ===== MODAL =====
+function openM(id){ document.getElementById('m-'+id).classList.add('open'); }
+function closeM(id){ document.getElementById('m-'+id).classList.remove('open'); }
+
+// ===== WA FLOAT =====
+function initWA(){
+  const num = settings.wa || '923124619481';
+  const msg = encodeURIComponent('السلام علیکم، میں قرآن اکیڈمی کے بارے میں پوچھنا چاہتا ہوں');
+  document.getElementById('waFloat').href = `https://wa.me/${num}?text=${msg}`;
+}
+function openWA(phone,name){
+  const num=phone.replace(/[^0-9]/g,'');
+  const intl=num.startsWith('0')?'92'+num.slice(1):num;
+  const msg=encodeURIComponent(`السلام علیکم ${name}، قرآن کلاس کی یاددہانی`);
+  window.open(`https://wa.me/${intl}?text=${msg}`,'_blank');
+}
+setTimeout(()=>{ const t=document.getElementById('waTip'); if(t)t.style.display='none'; },4000);
+
+// ===== STUDENTS =====
+function addStudent(){
+  const name=document.getElementById('s-name').value.trim();
+  const phone=document.getElementById('s-phone').value.trim();
+  const age=document.getElementById('s-age').value;
+  const day=document.getElementById('s-day').value;
+  const time=document.getElementById('s-time').value;
+  const lesson=document.getElementById('s-lesson').value.trim();
+  if(!name){showToast('⚠️ نام لکھنا ضروری ہے');return;}
+  students.push({id:Date.now(),name,phone,age,day,time,lesson,fee:COURSE_FEE,paid:false,progress:0,stars:0,paidMonths:[]});
+  save(); closeM('addStudent');
+  ['s-name','s-phone','s-age','s-time','s-lesson'].forEach(i=>document.getElementById(i).value='');
+  renderStudents(students); renderDashboard();
+  showToast('✅ طالب علم شامل ہو گیا');
+}
+
+function renderStudents(list){
+  const el=document.getElementById('studentList');
+  if(!list.length){el.innerHTML='<div class="empty"><div class="ei">👤</div><p>کوئی طالب علم نہیں</p></div>';return;}
+  el.innerHTML=list.map(s=>`
+    <div class="scard">
+      <div class="avatar">👤</div>
+      <div class="sinfo">
+        <div class="sname">${s.name}</div>
+        <div class="sdet">📅 ${s.day} ⏰ ${s.time||'—'}</div>
+        <div class="sdet">📖 ${s.lesson||'—'} | ${'⭐'.repeat(s.stars||0)||'☆'}</div>
+        <div class="sdet" style="color:${s.paid?'var(--gd)':'var(--red)'}">💰 ${s.paid?'✅ ادا':'❌ باقی'}</div>
+      </div>
+      <div class="sacts">
+        ${s.phone?`<button class="iBtn wa" onclick="openWA('${s.phone}','${s.name}')">💬</button>`:''}
+        <button class="iBtn inf" onclick="showDetail(${s.id})">ℹ️</button>
+      </div>
+    </div>`).join('');
+}
+
+function searchS(q){ renderStudents(students.filter(s=>s.name.includes(q))); }
+
+function showDetail(id){
+  const s=students.find(x=>x.id===id);
+  document.getElementById('sd-title').textContent=s.name;
+  document.getElementById('sd-content').innerHTML=`
+    <div style="display:grid;gap:8px">
+      <div class="card" style="padding:12px">
+        <div style="display:grid;gap:6px;font-size:0.8rem">
+          <div>📱 واٹس ایپ: ${s.phone||'—'}</div>
+          <div>🎂 عمر: ${s.age||'—'} سال</div>
+          <div>📅 دن: ${s.day} ⏰ ${s.time||'—'}</div>
+          <div>📖 سبق: ${s.lesson||'—'}</div>
+          <div>💰 فیس: ${s.fee||COURSE_FEE} روپے</div>
+          <div>📊 ترقی: ${s.progress||0}%</div>
+          <div>⭐ ستارے: ${'⭐'.repeat(s.stars||0)||'ابھی نہیں'}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn sm" onclick="togglePaid(${id})">${s.paid?'↩️ فیس واپس':'✅ فیس وصول'}</button>
+        <button class="btn sm gold" onclick="giveStar(${id})">⭐ ستارہ دیں</button>
+        <button class="btn sm" onclick="showReceipt(${id})">🧾 رسید</button>
+        <button class="btn sm" style="background:linear-gradient(135deg,var(--blue),#2a50a0)" onclick="showCert(${id})">🏆 سرٹیفکیٹ</button>
+        ${s.phone?`<button class="btn sm" style="background:linear-gradient(135deg,#25d366,#128C7E)" onclick="openWA('${s.phone}','${s.name}')">💬 واٹس ایپ</button>`:''}
+        <button class="btn sm red" onclick="delStudent(${id})">🗑️ حذف</button>
+      </div>
+    </div>`;
+  openM('studentDetail');
+}
+
+function togglePaid(id){
+  const s=students.find(x=>x.id===id);
+  s.paid=!s.paid;
+  if(s.paid){ const m=new Date().toISOString().slice(0,7); if(!s.paidMonths)s.paidMonths=[]; if(!s.paidMonths.includes(m))s.paidMonths.push(m); }
+  save(); closeM('studentDetail'); renderStudents(students); renderFees(); renderDashboard();
+  showToast(s.paid?'✅ فیس وصول ہو گئی':'↩️ فیس واپس کر دی');
+}
+
+function giveStar(id){
+  const s=students.find(x=>x.id===id);
+  s.stars=Math.min(5,(s.stars||0)+1);
+  save(); closeM('studentDetail'); renderStudents(students);
+  showToast(`⭐ ${s.name} کو ستارہ دیا گیا`);
+}
+
+function delStudent(id){
+  if(!confirm('واقعی حذف کریں؟')) return;
+  students=students.filter(x=>x.id!==id);
+  save(); closeM('studentDetail'); renderStudents(students); renderDashboard();
+  showToast('🗑️ حذف ہو گیا');
+}
+
+// ===== ATTENDANCE =====
+let todayAtt = {};
+function renderAttendance(){
+  const el=document.getElementById('attList');
+  const el2=document.getElementById('attDate');
+  const now=new Date();
+  el2.textContent=`${today}، ${now.getDate()} ${MONTHS[now.getMonth()]}`;
+  todayAtt = attendance[todayKey] ? {...attendance[todayKey]} : {};
+  if(!students.length){el.innerHTML='<div class="empty"><div class="ei">📋</div><p>کوئی طالب علم نہیں</p></div>';return;}
+  el.innerHTML='<div>'+students.map(s=>{
+    const st=todayAtt[s.id]||'';
+    return `<div class="att-row">
+      <div style="font-size:0.85rem;font-weight:600">${s.name}</div>
+      <div class="att-btns">
+        <button class="att-btn p ${st==='p'?'sel':''}" onclick="markAtt(${s.id},'p',this)">حاضر</button>
+        <button class="att-btn a ${st==='a'?'sel':''}" onclick="markAtt(${s.id},'a',this)">غیر حاضر</button>
+        <button class="att-btn l ${st==='l'?'sel':''}" onclick="markAtt(${s.id},'l',this)">رخصت</button>
+      </div>
+    </div>`;
+  }).join('')+'</div>';
+  renderAttHistory();
+}
+
+function markAtt(id,status,btn){
+  todayAtt[id]=status;
+  const row=btn.closest('.att-row');
+  row.querySelectorAll('.att-btn').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+}
+
+function saveAttendance(){
+  attendance[todayKey]=todayAtt;
+  saveA(); renderAttHistory();
+  showToast('✅ حاضری محفوظ ہو گئی');
+}
+
+function renderAttHistory(){
+  const el=document.getElementById('attHistory');
+  const keys=Object.keys(attendance).sort().reverse().slice(0,7);
+  if(!keys.length){el.innerHTML='<div class="empty"><p>ابھی کوئی ریکارڈ نہیں</p></div>';return;}
+  el.innerHTML=keys.map(k=>{
+    const rec=attendance[k];
+    const p=Object.values(rec).filter(v=>v==='p').length;
+    const a=Object.values(rec).filter(v=>v==='a').length;
+    const l=Object.values(rec).filter(v=>v==='l').length;
+    return `<div class="litem">
+      <div style="font-size:0.8rem;font-weight:600">${k}</div>
+      <div style="display:flex;gap:6px">
+        <span class="badge green">✅ ${p}</span>
+        <span class="badge red">❌ ${a}</span>
+        <span class="badge orange">🏖️ ${l}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== FEES =====
+function fTab(t,btn){
+  currentFeeTab=t;
+  document.querySelectorAll('#page-fees .tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderFees();
+}
+
+function renderFees(){
+  const rec=students.filter(s=>s.paid).reduce((a,s)=>a+(s.fee||COURSE_FEE),0);
+  const pend=students.filter(s=>!s.paid).reduce((a,s)=>a+(s.fee||COURSE_FEE),0);
+  document.getElementById('f-rec').textContent=rec.toLocaleString();
+  document.getElementById('f-pend').textContent=pend.toLocaleString();
+  const el=document.getElementById('feeList');
+  let list=students;
+  if(currentFeeTab==='paid') list=students.filter(s=>s.paid);
+  if(currentFeeTab==='unpaid') list=students.filter(s=>!s.paid);
+  if(!list.length){el.innerHTML='<div class="empty"><div class="ei">💰</div><p>کوئی ریکارڈ نہیں</p></div>';return;}
+  el.innerHTML=list.map(s=>`
+    <div class="scard">
+      <div class="avatar" style="background:linear-gradient(135deg,${s.paid?'var(--gl),var(--gd)':'var(--red),#e07070'})">${s.paid?'✅':'❌'}</div>
+      <div class="sinfo">
+        <div class="sname">${s.name}</div>
+        <div class="sdet">💰 ${(s.fee||COURSE_FEE).toLocaleString()} روپے ماہانہ</div>
+        <div class="sdet" style="color:${s.paid?'var(--gd)':'var(--red)'}">حالت: ${s.paid?'ادا شدہ':'باقی'}</div>
+      </div>
+      <div class="sacts">
+        <button class="btn sm" style="font-size:0.65rem" onclick="quickPay(${s.id})">${s.paid?'↩️':'💳 وصول'}</button>
+        <button class="iBtn inf" onclick="showReceipt(${s.id})">🧾</button>
+      </div>
+    </div>`).join('');
+}
+
+function quickPay(id){
+  const s=students.find(x=>x.id===id);
+  s.paid=!s.paid;
+  if(s.paid){const m=new Date().toISOString().slice(0,7);if(!s.paidMonths)s.paidMonths=[];if(!s.paidMonths.includes(m))s.paidMonths.push(m);}
+  save(); renderFees(); renderDashboard();
+  showToast(s.paid?'✅ فیس وصول ہو گئی':'↩️ واپس کر دی');
+}
+
+function showReceipt(id){
+  const s=students.find(x=>x.id===id);
+  const now=new Date();
+  document.getElementById('receiptContent').innerHTML=`
+    <div class="receipt">
+      <div class="rtitle">🕌 آن لائن قرآن اکیڈمی</div>
+      <table>
+        <tr><td>طالب علم:</td><td><strong>${s.name}</strong></td></tr>
+        <tr><td>تاریخ:</td><td>${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()}</td></tr>
+        <tr><td>کورس:</td><td>${s.lesson||'قرآن کلاس'}</td></tr>
+        <tr><td>فیس:</td><td>${(s.fee||COURSE_FEE).toLocaleString()} روپے</td></tr>
+        <tr><td>حالت:</td><td style="color:${s.paid?'green':'red'}">${s.paid?'✅ ادا شدہ':'❌ باقی'}</td></tr>
+        <tr class="total"><td>کل رقم:</td><td>${(s.fee||COURSE_FEE).toLocaleString()} روپے</td></tr>
+      </table>
+      <div style="margin-top:12px;font-size:0.68rem;color:var(--soft)">جزاکم اللہ خیراً</div>
+    </div>`;
+  openM('receipt');
+}
+
+// ===== PROGRESS =====
+function renderProgress(){
+  const el=document.getElementById('progressList');
+  if(!students.length){el.innerHTML='<div class="empty"><div class="ei">📊</div><p>کوئی طالب علم نہیں</p></div>';return;}
+  el.innerHTML=students.map(s=>`
+    <div class="card" style="padding:14px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div>
+          <div style="font-weight:700;font-size:0.9rem">${s.name}</div>
+          <div style="font-size:0.7rem;color:var(--gl);margin-top:2px">📖 ${s.lesson||'—'}</div>
+          <div class="stars" style="margin-top:4px">${s.stars>0?'⭐'.repeat(s.stars):'☆☆☆☆☆'}</div>
+        </div>
+        <span class="badge ${(s.progress||0)>=80?'green':(s.progress||0)>=40?'orange':'red'}">${s.progress||0}%</span>
+      </div>
+      <div class="pbar-bg"><div class="pbar-fill" style="width:${s.progress||0}%"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:0.65rem;color:var(--soft);margin-bottom:10px"><span>شروع</span><span>مکمل</span></div>
+      <div style="display:flex;gap:6px">
+        <button class="btn sm outline" onclick="chProg(${s.id},-10)">➖</button>
+        <button class="btn sm" onclick="chProg(${s.id},10)">➕ ترقی</button>
+        <button class="btn sm gold" onclick="showCert(${s.id})">🏆 سرٹیفکیٹ</button>
+      </div>
+    </div>`).join('');
+}
+
+function chProg(id,d){
+  const s=students.find(x=>x.id===id);
+  s.progress=Math.max(0,Math.min(100,(s.progress||0)+d));
+  save(); renderProgress();
+}
+
+// ===== CERTIFICATE =====
+function showCert(id){
+  const s=students.find(x=>x.id===id);
+  const now=new Date();
+  document.getElementById('certContent').innerHTML=`
+    <div class="cert">
+      <div class="cseal">🕌</div>
+      <div class="ctitle">سند تکمیل</div>
+      <div style="font-size:0.78rem;color:var(--soft)">یہ سند دی جاتی ہے</div>
+      <div class="cname">${s.name}</div>
+      <div style="font-size:0.78rem;color:var(--soft);line-height:2">کو قرآن کلاس میں<br><strong style="color:var(--gd)">${s.lesson||'قرآن پاک'}</strong><br>مکمل کرنے پر</div>
+      <div style="margin:12px 0;font-size:0.85rem;color:var(--gold)">ترقی: ${s.progress||0}% | ${'⭐'.repeat(s.stars||0)||'☆'}</div>
+      <div style="margin-top:14px;font-size:0.65rem;color:var(--soft)">${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()}</div>
+      <div style="margin-top:8px;font-size:0.7rem;color:var(--gd);font-weight:700">آن لائن قرآن اکیڈمی</div>
+    </div>`;
+  openM('cert');
+}
+
+// ===== ANNOUNCEMENTS =====
+function addAnn(){
+  const title=document.getElementById('ann-title').value.trim();
+  const body=document.getElementById('ann-body').value.trim();
+  const type=document.getElementById('ann-type').value;
+  if(!title){showToast('⚠️ عنوان لکھیں');return;}
+  announcements.unshift({id:Date.now(),title,body,type,date:new Date().toLocaleDateString('ur')});
+  saveAnn(); closeM('addAnn');
+  ['ann-title','ann-body'].forEach(i=>document.getElementById(i).value='');
+  renderAnn(); showToast('📢 اعلان شائع ہو گیا');
+}
+
+function renderAnn(){
+  const el=document.getElementById('annList');
+  if(!announcements.length){el.innerHTML='<div class="empty"><div class="ei">📢</div><p>کوئی اعلان نہیں</p></div>';return;}
+  const icons={normal:'ℹ️',urgent:'🚨',holiday:'🏖️'};
+  el.innerHTML=announcements.map(a=>`
+    <div class="ann-card ${a.type==='urgent'?'urgent':''}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div style="font-weight:700;font-size:0.88rem">${icons[a.type]||'📢'} ${a.title}</div>
+        <button class="iBtn del" style="width:26px;height:26px;font-size:0.75rem" onclick="delAnn(${a.id})">🗑️</button>
+      </div>
+      ${a.body?`<div style="font-size:0.75rem;color:var(--soft);margin-top:5px;line-height:1.8">${a.body}</div>`:''}
+      <div style="font-size:0.65rem;color:var(--soft);margin-top:6px">${a.date}</div>
+    </div>`).join('');
+}
+
+function delAnn(id){
+  announcements=announcements.filter(x=>x.id!==id);
+  saveAnn(); renderAnn();
+}
+
+// ===== APPLICATIONS =====
+function aTab(t,btn){
+  currentAppTab=t;
+  document.querySelectorAll('#page-applications .tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderApps();
+}
+
+function showApplyForm(){
+  document.getElementById('applyBox').style.display='block';
+  document.getElementById('appTeacher').style.display='none';
+}
+function showAppTeacher(){
+  document.getElementById('applyBox').style.display='none';
+  document.getElementById('appTeacher').style.display='block';
+  renderApps();
+}
+
+function submitApp(){
+  const name=document.getElementById('ap-name').value.trim();
+  const phone=document.getElementById('ap-phone').value.trim();
+  if(!name||!phone){showToast('⚠️ نام اور نمبر ضروری ہے');return;}
+  applications.push({
+    id:Date.now(),name,phone,
+    age:document.getElementById('ap-age').value,
+    level:document.getElementById('ap-level').value,
+    day:document.getElementById('ap-day').value,
+    time:document.getElementById('ap-time').value,
+    note:document.getElementById('ap-note').value.trim(),
+    status:'pending',date:new Date().toLocaleDateString('ur')
+  });
+  saveApp();
+  ['ap-name','ap-phone','ap-age','ap-time','ap-note'].forEach(i=>document.getElementById(i).value='');
+  showToast('✅ درخواست بھیج دی گئی! جزاکم اللہ خیراً');
+  showAppTeacher();
+}
+
+function renderApps(){
+  const el=document.getElementById('appList');
+  if(!el) return;
+  const pCount=applications.filter(a=>a.status==='pending').length;
+  document.getElementById('aTab-pending').textContent=`⏳ نئی${pCount>0?' ('+pCount+')':''}`;
+  const list=applications.filter(a=>a.status===currentAppTab);
+  if(!list.length){el.innerHTML='<div class="empty"><div class="ei">📝</div><p>کوئی درخواست نہیں</p></div>';return;}
+  el.innerHTML=list.map(a=>`
+    <div class="scard">
+      <div class="avatar" style="background:linear-gradient(135deg,var(--gold),#e8c060);color:var(--gd)">📝</div>
+      <div class="sinfo">
+        <div class="sname">${a.name}</div>
+        <div class="sdet">📱 ${a.phone} | 🎂 ${a.age||'—'} سال</div>
+        <div class="sdet">📖 ${a.level} | 📅 ${a.day}</div>
+      </div>
+      <div class="sacts">
+        ${a.phone?`<button class="iBtn wa" onclick="openWA('${a.phone}','${a.name}')">💬</button>`:''}
+        <button class="iBtn inf" onclick="showAppDetail(${a.id})">ℹ️</button>
+      </div>
+    </div>`).join('');
+}
+
+function showAppDetail(id){
+  const a=applications.find(x=>x.id===id);
+  document.getElementById('ad-title').textContent=a.name+' کی درخواست';
+  document.getElementById('ad-content').innerHTML=`
+    <div style="display:grid;gap:8px">
+      <div class="card" style="padding:12px">
+        <div style="display:grid;gap:6px;font-size:0.8rem">
+          <div>📛 نام: <strong>${a.name}</strong></div>
+          <div>📱 واٹس ایپ: ${a.phone}</div>
+          <div>🎂 عمر: ${a.age||'—'} سال</div>
+          <div>📖 مقام: ${a.level}</div>
+          <div>📅 دن: ${a.day} ⏰ ${a.time||'—'}</div>
+          ${a.note?`<div>💬 نوٹ: ${a.note}</div>`:''}
+          <div>🗓️ تاریخ: ${a.date}</div>
+        </div>
+        <div class="fee-info-box" style="margin-top:10px">
+          <div style="font-size:0.68rem;color:var(--gold-l)">💰 کورس فیس</div>
+          <div class="fa">۵,۵۰۰ روپے ماہانہ</div>
+        </div>
+      </div>
+      ${a.status==='pending'?`
+        <button class="btn" onclick="updApp(${id},'accepted')">✅ منظور کریں</button>
+        <button class="btn red" onclick="updApp(${id},'rejected')">❌ مسترد کریں</button>
+      `:a.status==='accepted'?`
+        <button class="btn" onclick="enrollApp(${id})">➕ طالب علم میں شامل کریں</button>
+        <button class="btn red" onclick="updApp(${id},'rejected')">❌ منسوخ</button>
+      `:`<button class="btn" onclick="updApp(${id},'accepted')">↩️ دوبارہ منظور</button>`}
+      ${a.phone?`<button class="btn" style="background:linear-gradient(135deg,#25d366,#128C7E)" onclick="openWA('${a.phone}','${a.name}')">💬 واٹس ایپ</button>`:''}
+    </div>`;
+  openM('appDetail');
+}
+
+function updApp(id,status){
+  applications.find(x=>x.id===id).status=status;
+  saveApp(); closeM('appDetail'); renderApps();
+  showToast(status==='accepted'?'✅ منظور':'❌ مسترد');
+}
+
+function enrollApp(id){
+  const a=applications.find(x=>x.id===id);
+  students.push({id:Date.now(),name:a.name,phone:a.phone,age:a.age,day:a.day,time:a.time,lesson:a.level,fee:COURSE_FEE,paid:false,progress:0,stars:0,paidMonths:[]});
+  a.status='enrolled'; save(); saveApp();
+  closeM('appDetail'); renderApps();
+  showToast('✅ طالب علم شامل ہو گیا!');
+}
+
+function shareViaWA(){
+  const msg=encodeURIComponent('السلام علیکم!\nآن لائن قرآن اکیڈمی میں داخلے کے لیے یہ فارم بھریں:\n\n📝 داخلہ فارم لنک:\n[اس فائل کا لنک یہاں لگائیں]\n\n💰 ماہانہ فیس: ۵,۵۰۰ روپے\n📞 رابطہ: '+settings.wa+'\n\nجزاکم اللہ خیراً 🕌');
+  window.open(`https://wa.me/?text=${msg}`,'_blank');
+}
+
+// ===== SETTINGS =====
+function loadSettings(){
+  document.getElementById('zoomLink').value=settings.zoom||'';
+  document.getElementById('zoomId').value=settings.zoomId||'';
+  document.getElementById('zoomPass').value=settings.zoomPass||'';
+  document.getElementById('meetLink').value=settings.meet||'';
+  document.getElementById('myWA').value=settings.wa||'';
+}
+
+function saveClassLinks(){
+  settings.zoom=document.getElementById('zoomLink').value.trim();
+  settings.zoomId=document.getElementById('zoomId').value.trim();
+  settings.zoomPass=document.getElementById('zoomPass').value.trim();
+  settings.meet=document.getElementById('meetLink').value.trim();
+  saveSets(); renderZoomBoxes();
+  showToast('✅ کلاس لنک محفوظ ہو گیا');
+}
+
+function saveWA(){
+  const n=document.getElementById('myWA').value.replace(/[^0-9]/g,'');
+  settings.wa=n.startsWith('0')?'92'+n.slice(1):n;
+  saveSets(); initWA();
+  showToast('✅ نمبر محفوظ ہو گیا');
+}
+
+function renderZoomBoxes(){
+  const el=document.getElementById('zoomBoxes');
+  if(!settings.zoom && !settings.meet){
+    el.innerHTML='<div style="font-size:0.78rem;color:var(--soft);text-align:center;padding:12px">ترتیبات میں کلاس لنک شامل کریں</div>';
+    return;
+  }
+  let html='';
+  if(settings.zoom) html+=`
+    <div class="zoom-box">
+      <div><div class="zt">🎥 زوم کلاس</div>
+      ${settings.zoomId?`<div class="zs">ID: ${settings.zoomId} ${settings.zoomPass?'| Pass: '+settings.zoomPass:''}</div>`:''}
+      </div>
+      <button class="zoom-btn" onclick="window.open('${settings.zoom}','_blank')">جوائن کریں</button>
+    </div>`;
+  if(settings.meet) html+=`
+    <div class="zoom-box" style="background:linear-gradient(135deg,#0f9d58,#0a7040);margin-top:8px">
+      <div><div class="zt">🟢 گوگل میٹ</div></div>
+      <button class="zoom-btn" style="color:#0f9d58" onclick="window.open('${settings.meet}','_blank')">جوائن کریں</button>
+    </div>`;
+  el.innerHTML=html;
+}
+
+// ===== DASHBOARD =====
+function renderDashboard(){
+  document.getElementById('st-students').textContent=students.length;
+  const todayC=students.filter(s=>s.day===today);
+  document.getElementById('st-today').textContent=todayC.length;
+  const rec=students.filter(s=>s.paid).reduce((a,s)=>a+(s.fee||COURSE_FEE),0);
+  const pend=students.filter(s=>!s.paid).reduce((a,s)=>a+(s.fee||COURSE_FEE),0);
+  document.getElementById('st-rec').textContent=rec.toLocaleString();
+  document.getElementById('st-pend').textContent=pend.toLocaleString();
+
+  const el=document.getElementById('todayList');
+  if(!todayC.length){el.innerHTML='<div class="empty"><div class="ei">📚</div><p>آج ('+today+') کوئی کلاس نہیں</p></div>';return;}
+  el.innerHTML=todayC.sort((a,b)=>a.time>b.time?1:-1).map(s=>`
+    <div class="litem">
+      <div><div style="font-weight:600;font-size:0.85rem">${s.name}</div>
+      <div style="font-size:0.7rem;color:var(--soft)">⏰ ${s.time||'—'} | 📖 ${s.lesson||'—'}</div></div>
+      <span class="badge ${s.paid?'green':'orange'}">${s.paid?'✅ فیس':'💰 باقی'}</span>
+    </div>`).join('');
+
+  // Top student
+  const top=students.filter(s=>s.stars>0).sort((a,b)=>b.stars-a.stars)[0];
+  const tel=document.getElementById('topStudent');
+  if(top) tel.innerHTML=`<div class="litem"><div><div style="font-weight:700">${top.name}</div><div style="font-size:0.72rem;color:var(--soft)">${'⭐'.repeat(top.stars)}</div></div><span class="badge gold">بہترین 🏆</span></div>`;
+  else tel.innerHTML='<div class="litem"><span style="color:var(--soft);font-size:0.78rem">ستارے دیں تاکہ بہترین طالب علم نظر آئے</span></div>';
+
+  renderZoomBoxes();
+}
+
+// ===== INIT =====
+function initApp(){
+  const now=new Date();
+  document.getElementById('todayDate').textContent=`${today}، ${now.getDate()} ${MONTHS[now.getMonth()]}`;
+  document.getElementById('attDate').textContent=`${today}، ${now.getDate()} ${MONTHS[now.getMonth()]}`;
+  initWA();
+  renderDashboard();
+}
+</script>
+</body>
+</html>
