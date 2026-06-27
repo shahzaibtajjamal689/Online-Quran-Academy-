@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>داخلہ فارم — آن لائن قرآن اکیڈمی</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gd:#1a4731;--gm:#2d6a4f;--gl:#52b788;
+  --gold:#c9a84c;--gold-l:#f0d080;
+  --cream:#fdfaf3;--cream-d:#f0ead8;
+  --text:#1c1c1c;--soft:#4a4a4a;--white:#fff;
+}
+body{font-family:'Noto Nastaliq Urdu',serif;background:var(--cream);color:var(--text);min-height:100vh}
+
+/* HEADER */
+header{background:linear-gradient(135deg,var(--gd),var(--gm));padding:0;box-shadow:0 3px 20px rgba(0,0,0,0.3)}
+.header-top{display:flex;justify-content:space-between;align-items:center;padding:16px 20px}
+.header-top h1{font-size:1.2rem;font-weight:700;color:var(--gold-l);line-height:1.8}
+.header-top .logo{font-size:2.5rem}
+.header-ayat{background:rgba(0,0,0,0.2);padding:12px 20px;text-align:center;border-top:1px solid rgba(255,255,255,0.1)}
+.header-ayat .ayat{font-size:1rem;color:var(--gold-l);line-height:2.2;margin-bottom:3px}
+.header-ayat .trans{font-size:0.72rem;color:rgba(255,255,255,0.8);line-height:1.8}
+
+/* STEPS BAR */
+.steps{display:flex;background:var(--white);border-bottom:2px solid var(--cream-d)}
+.step{flex:1;padding:12px 6px;text-align:center;font-size:0.68rem;color:var(--soft);border-bottom:3px solid transparent;transition:all 0.3s}
+.step.active{color:var(--gd);border-bottom-color:var(--gold);font-weight:700}
+.step.done{color:var(--gl);border-bottom-color:var(--gl)}
+.step-num{width:24px;height:24px;border-radius:50%;background:var(--cream-d);color:var(--soft);display:flex;align-items:center;justify-content:center;font-size:0.75rem;margin:0 auto 4px;font-weight:700;transition:all 0.3s}
+.step.active .step-num{background:var(--gd);color:white}
+.step.done .step-num{background:var(--gl);color:white}
+
+/* PAGES */
+.form-page{display:none;padding:20px 16px;animation:fadeIn 0.3s ease}
+.form-page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* CARDS */
+.info-card{background:linear-gradient(135deg,var(--gd),var(--gm));border-radius:16px;padding:18px;margin-bottom:18px;color:white;text-align:center}
+.info-card .amount{font-size:2rem;font-weight:700;color:var(--gold-l);line-height:1.3}
+.info-card .sub{font-size:0.72rem;color:rgba(255,255,255,0.85);margin-top:5px;line-height:2}
+.feature-list{background:var(--white);border-radius:16px;padding:16px;margin-bottom:18px;box-shadow:0 2px 12px rgba(0,0,0,0.07)}
+.feature-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--cream-d);font-size:0.82rem}
+.feature-item:last-child{border-bottom:none}
+.feature-item .fi{font-size:1.2rem}
+
+/* FORM */
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:0.8rem;font-weight:700;color:var(--text);margin-bottom:6px}
+.fi-input,.fs-input{width:100%;padding:12px 14px;border:2px solid var(--cream-d);border-radius:12px;font-family:'Noto Nastaliq Urdu',serif;font-size:0.88rem;background:var(--white);outline:none;text-align:right;transition:border-color 0.2s;color:var(--text)}
+.fi-input:focus,.fs-input:focus{border-color:var(--gl);box-shadow:0 0 0 3px rgba(82,183,136,0.1)}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.required{color:var(--gd)}
+
+/* BUTTONS */
+.btn-next{width:100%;padding:14px;background:linear-gradient(135deg,var(--gd),var(--gm));color:white;border:none;border-radius:14px;font-family:'Noto Nastaliq Urdu',serif;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 4px 15px rgba(45,106,79,0.4);transition:transform 0.1s;margin-top:6px}
+.btn-next:active{transform:scale(0.98)}
+.btn-back{width:100%;padding:12px;background:white;color:var(--gd);border:2px solid var(--gd);border-radius:14px;font-family:'Noto Nastaliq Urdu',serif;font-size:0.9rem;cursor:pointer;margin-top:8px}
+.btn-wa{width:100%;padding:14px;background:linear-gradient(135deg,#25d366,#128C7E);color:white;border:none;border-radius:14px;font-family:'Noto Nastaliq Urdu',serif;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 4px 15px rgba(37,211,102,0.4);margin-top:8px}
+
+/* SUCCESS */
+.success-box{text-align:center;padding:30px 16px}
+.success-icon{font-size:5rem;margin-bottom:16px;animation:bounce 0.6s ease}
+@keyframes bounce{0%{transform:scale(0)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+.success-title{font-size:1.3rem;font-weight:700;color:var(--gd);margin-bottom:10px;line-height:1.8}
+.success-msg{font-size:0.82rem;color:var(--soft);line-height:2.2;margin-bottom:20px}
+.ref-box{background:var(--cream-d);border-radius:12px;padding:14px;margin-bottom:20px;text-align:center}
+.ref-num{font-size:1.4rem;font-weight:700;color:var(--gd)}
+.ref-lbl{font-size:0.72rem;color:var(--soft);margin-top:3px}
+
+/* SUMMARY */
+.summary-card{background:var(--white);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,0.06)}
+.summary-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--cream-d);font-size:0.82rem}
+.summary-row:last-child{border-bottom:none;font-weight:700;color:var(--gd)}
+.summary-lbl{color:var(--soft)}
+
+/* FOOTER */
+footer{background:var(--gd);color:white;padding:20px;text-align:center;margin-top:20px}
+footer .f-name{font-size:1rem;font-weight:700;color:var(--gold-l);margin-bottom:8px}
+footer .f-contact{font-size:0.78rem;color:rgba(255,255,255,0.85);line-height:2.2}
+footer a{color:var(--gold-l);text-decoration:none}
+
+/* WA FLOAT */
+.wa-float{position:fixed;bottom:24px;left:16px;z-index:500;width:56px;height:56px;border-radius:50%;background:#25d366;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(37,211,102,0.5);text-decoration:none;font-size:1.7rem;animation:pulse 2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(37,211,102,0.5)}70%{box-shadow:0 0 0 12px rgba(37,211,102,0)}100%{box-shadow:0 0 0 0 rgba(37,211,102,0)}}
+
+.day-check{display:flex;align-items:center;gap:8px;padding:9px 12px;border:2px solid var(--cream-d);border-radius:10px;font-size:0.82rem;cursor:pointer;transition:all 0.2s;background:var(--cream)}
+.day-check input[type=checkbox]{width:18px;height:18px;accent-color:var(--gd);cursor:pointer}
+.day-check:has(input:checked){background:linear-gradient(135deg,rgba(45,106,79,0.1),rgba(82,183,136,0.1));border-color:var(--gl);color:var(--gd);font-weight:700}
+.all-days-label{background:linear-gradient(135deg,var(--gd),var(--gm));color:white;border-color:var(--gd)}
+.all-days-label:has(input:checked){background:linear-gradient(135deg,var(--gold),#e8c060);color:var(--gd);border-color:var(--gold)}
+.error{color:#c05050;font-size:0.72rem;margin-top:4px;display:none}
+.error.show{display:block}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-top">
+    <div>
+      <h1>آن لائن قرآن اکیڈمی</h1>
+      <div style="font-size:0.72rem;color:rgba(255,255,255,0.75);margin-top:2px">داخلہ فارم ۲۰۲۶</div>
+    </div>
+    <div class="logo">🕌</div>
+  </div>
+  <div class="header-ayat">
+    <div class="ayat">﴿ خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ ﴾</div>
+    <div class="trans">تم میں سے بہترین وہ ہے جو قرآن سیکھے اور سکھائے — صحیح البخاری</div>
+  </div>
+</header>
+
+<!-- STEPS -->
+<div class="steps">
+  <div class="step active" id="step1">
+    <div class="step-num">۱</div>
+    معلومات
+  </div>
+  <div class="step" id="step2">
+    <div class="step-num">۲</div>
+    کورس
+  </div>
+  <div class="step" id="step3">
+    <div class="step-num">۳</div>
+    تصدیق
+  </div>
+  <div class="step" id="step4">
+    <div class="step-num">✓</div>
+    مکمل
+  </div>
+</div>
+
+<!-- PAGE 1: ذاتی معلومات -->
+<div class="form-page active" id="page1">
+  <div style="margin-bottom:18px">
+    <div style="font-size:1rem;font-weight:700;color:var(--gd);margin-bottom:4px">👤 ذاتی معلومات</div>
+    <div style="font-size:0.75rem;color:var(--soft)">براہ کرم تمام معلومات درست بھریں</div>
+  </div>
+
+  <div class="fg">
+    <label class="fl">📛 پورا نام <span class="required">*</span></label>
+    <input class="fi-input" id="ap-name" placeholder="مثال: محمد احمد علی">
+    <div class="error" id="err-name">⚠️ نام لکھنا ضروری ہے</div>
+  </div>
+
+  <div class="frow">
+    <div class="fg">
+      <label class="fl">📱 واٹس ایپ <span class="required">*</span></label>
+      <input class="fi-input" id="ap-phone" placeholder="03XX-XXXXXXX" type="tel">
+      <div class="error" id="err-phone">⚠️ نمبر لکھیں</div>
+    </div>
+    <div class="fg">
+      <label class="fl">🎂 عمر</label>
+      <input class="fi-input" id="ap-age" placeholder="سال" type="number" min="4" max="80">
+    </div>
+  </div>
+
+  <div class="fg">
+    <label class="fl">👤 صنف</label>
+    <select class="fs-input" id="ap-gender">
+      <option value="">منتخب کریں</option>
+      <option value="مرد">مرد</option>
+      <option value="عورت">عورت</option>
+      <option value="بچہ">بچہ (۱۲ سال سے کم)</option>
+    </select>
+  </div>
+
+  <div class="fg">
+    <label class="fl">🏙️ شہر</label>
+    <input class="fi-input" id="ap-city" placeholder="مثال: کراچی، لاہور، اسلام آباد">
+  </div>
+
+  <button class="btn-next" onclick="goStep2()">آگے جائیں ←</button>
+</div>
+
+<!-- PAGE 2: کورس کا انتخاب -->
+<div class="form-page" id="page2">
+
+  <div class="info-card">
+    <div style="font-size:0.78rem;color:var(--gold-l);margin-bottom:6px">💰 ماہانہ فیس</div>
+    <div class="amount">۵,۵۰۰ روپے</div>
+    <div class="sub">تمام کورسز کے لیے یکساں فیس<br>پہلی کلاس کے بعد ادائیگی</div>
+  </div>
+
+  <div class="feature-list">
+    <div style="font-weight:700;color:var(--gd);margin-bottom:8px;font-size:0.88rem">🎁 کیا ملے گا:</div>
+    <div class="feature-item"><span class="fi">🎥</span> زوم / گوگل میٹ پر لائیو کلاس</div>
+    <div class="feature-item"><span class="fi">👨‍🏫</span> تجربہ کار استاد کے ساتھ</div>
+    <div class="feature-item"><span class="fi">📅</span> ہفتہ وار شیڈول آپ کی سہولت کے مطابق</div>
+    <div class="feature-item"><span class="fi">📊</span> ماہانہ ترقی رپورٹ</div>
+    <div class="feature-item"><span class="fi">🏆</span> کورس مکمل پر سرٹیفکیٹ</div>
+    <div class="feature-item"><span class="fi">💬</span> واٹس ایپ سپورٹ</div>
+  </div>
+
+  <div class="fg">
+    <label class="fl">📖 کورس منتخب کریں <span class="required">*</span></label>
+    <select class="fs-input" id="ap-level">
+      <option value="">کورس چنیں</option>
+      <option value="قاعدہ">📗 قاعدہ (بالکل نئے طالب علم)</option>
+      <option value="ناظرہ قرآن">📘 ناظرہ قرآن</option>
+      <option value="حفظ قرآن">📙 حفظ قرآن</option>
+      <option value="تجوید">📕 تجوید کے اصول</option>
+      <option value="ترجمہ و تفسیر">📔 ترجمہ و تفسیر</option>
+    </select>
+    <div class="error" id="err-level">⚠️ کورس منتخب کریں</div>
+  </div>
+
+  <div class="fg">
+    <label class="fl">📅 پسندیدہ دن <span style="font-size:0.7rem;color:var(--soft)">(ایک یا زیادہ منتخب کریں)</span></label>
+    <div style="background:var(--white);border:2px solid var(--cream-d);border-radius:12px;padding:12px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <label class="day-check"><input type="checkbox" value="پیر"> پیر</label>
+        <label class="day-check"><input type="checkbox" value="منگل"> منگل</label>
+        <label class="day-check"><input type="checkbox" value="بدھ"> بدھ</label>
+        <label class="day-check"><input type="checkbox" value="جمعرات"> جمعرات</label>
+        <label class="day-check"><input type="checkbox" value="جمعہ"> جمعہ</label>
+        <label class="day-check"><input type="checkbox" value="ہفتہ"> ہفتہ</label>
+        <label class="day-check"><input type="checkbox" value="اتوار"> اتوار</label>
+        <label class="day-check all-days-label" style="grid-column:span 2"><input type="checkbox" id="allDays" onchange="toggleAllDays(this)"> ✅ تمام دن (پیر تا اتوار)</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="fg">
+    <label class="fl">⏰ پسندیدہ وقت</label>
+    <input class="fi-input" id="ap-time" type="time">
+  </div>
+
+  <div class="fg">
+    <label class="fl">💬 کوئی سوال یا خاص بات</label>
+    <input class="fi-input" id="ap-note" placeholder="اختیاری — کوئی بھی بات لکھ سکتے ہیں">
+  </div>
+
+  <button class="btn-next" onclick="goStep3()">تصدیق کریں ←</button>
+  <button class="btn-back" onclick="goBack(1)">← واپس</button>
+</div>
+
+<!-- PAGE 3: تصدیق -->
+<div class="form-page" id="page3">
+  <div style="margin-bottom:16px">
+    <div style="font-size:1rem;font-weight:700;color:var(--gd);margin-bottom:4px">✅ درخواست کی تصدیق</div>
+    <div style="font-size:0.75rem;color:var(--soft)">جمع کرنے سے پہلے معلومات چیک کریں</div>
+  </div>
+
+  <div class="summary-card" id="summaryBox"></div>
+
+  <div style="background:#fff8e1;border:2px solid var(--gold);border-radius:12px;padding:14px;margin-bottom:14px;font-size:0.78rem;line-height:2.2;color:var(--text)">
+    ⚠️ <strong>یاد رہے:</strong> درخواست جمع ہونے کے بعد ہم <strong>۲۴ گھنٹے</strong> کے اندر آپ سے واٹس ایپ پر رابطہ کریں گے ان شاءاللہ۔
+  </div>
+
+  <button class="btn-next" onclick="submitForm()">📨 درخواست جمع کریں</button>
+  <button class="btn-back" onclick="goBack(2)">← واپس</button>
+</div>
+
+<!-- PAGE 4: کامیابی -->
+<div class="form-page" id="page4">
+  <div class="success-box">
+    <div class="success-icon">🎉</div>
+    <div class="success-title">ماشاءاللہ!<br>درخواست موصول ہو گئی</div>
+    <div class="success-msg">
+      جزاکم اللہ خیراً! آپ کی درخواست کامیابی سے جمع ہو گئی۔<br>
+      ہم <strong>۲۴ گھنٹے</strong> کے اندر آپ سے<br>
+      واٹس ایپ پر رابطہ کریں گے ان شاءاللہ۔
+    </div>
+
+    <div class="ref-box">
+      <div class="ref-num" id="refNum">QA-0000</div>
+      <div class="ref-lbl">درخواست نمبر (محفوظ رکھیں)</div>
+    </div>
+
+    <div style="background:var(--white);border-radius:12px;padding:14px;margin-bottom:16px;text-align:right;box-shadow:0 2px 10px rgba(0,0,0,0.06)">
+      <div style="font-weight:700;color:var(--gd);margin-bottom:10px;font-size:0.88rem">📋 آپ کی تفصیل:</div>
+      <div id="successDetail" style="font-size:0.8rem;line-height:2.5;color:var(--soft)"></div>
+    </div>
+
+    <button class="btn-wa" onclick="contactWA()">
+      💬 واٹس ایپ پر رابطہ کریں
+    </button>
+
+    <button class="btn-next" style="margin-top:8px;background:linear-gradient(135deg,var(--gold),#e8c060);color:var(--gd)" onclick="resetForm()">
+      ↩️ نیا فارم بھریں
+    </button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="f-name">🕌 آن لائن قرآن اکیڈمی</div>
+  <div class="f-contact">
+    📞 واٹس ایپ: <a href="https://wa.me/923124619481">03124619481</a><br>
+    💰 ماہانہ فیس: ۵,۵۰۰ روپے<br>
+    🎥 کلاس: زوم / گوگل میٹ<br>
+    ⏰ پیر تا ہفتہ — آپ کی سہولت کے مطابق
+  </div>
+</footer>
+
+<!-- WA FLOAT -->
+<a class="wa-float" href="https://wa.me/923124619481?text=السلام علیکم، میں قرآن اکیڈمی میں داخلہ لینا چاہتا ہوں" target="_blank">💬</a>
+
+<script>
+let formData = {};
+const TEACHER_WA = '923124619481';
+
+function goStep2(){
+  const name = document.getElementById('ap-name').value.trim();
+  const phone = document.getElementById('ap-phone').value.trim();
+  let valid = true;
+  if(!name){ document.getElementById('err-name').classList.add('show'); valid=false; }
+  else document.getElementById('err-name').classList.remove('show');
+  if(!phone){ document.getElementById('err-phone').classList.add('show'); valid=false; }
+  else document.getElementById('err-phone').classList.remove('show');
+  if(!valid) return;
+  formData.name = name;
+  formData.phone = phone;
+  formData.age = document.getElementById('ap-age').value;
+  formData.gender = document.getElementById('ap-gender').value;
+  formData.city = document.getElementById('ap-city').value.trim();
+  setStep(2);
+}
+
+function goStep3(){
+  const level = document.getElementById('ap-level').value;
+  if(!level){ document.getElementById('err-level').classList.add('show'); return; }
+  document.getElementById('err-level').classList.remove('show');
+  formData.level = level;
+  const checked = document.querySelectorAll('#dayCheckboxes input[type=checkbox]:checked:not(#allDays)');
+  formData.day = checked.length > 0 ? Array.from(checked).map(c=>c.value).join('، ') : 'کوئی دن نہیں';
+  formData.time = document.getElementById('ap-time').value;
+  formData.note = document.getElementById('ap-note').value.trim();
+
+  // Build summary
+  const rows = [
+    ['📛 نام', formData.name],
+    ['📱 واٹس ایپ', formData.phone],
+    ['🎂 عمر', formData.age ? formData.age+' سال' : '—'],
+    ['👤 صنف', formData.gender || '—'],
+    ['🏙️ شہر', formData.city || '—'],
+    ['📖 کورس', formData.level],
+    ['📅 دن', formData.day || '—'],
+    ['⏰ وقت', formData.time || '—'],
+    ['💰 ماہانہ فیس', '۵,۵۰۰ روپے'],
+  ];
+  document.getElementById('summaryBox').innerHTML = rows.map(r=>`
+    <div class="summary-row">
+      <span class="summary-lbl">${r[0]}</span>
+      <span><strong>${r[1]}</strong></span>
+    </div>`).join('');
+  setStep(3);
+}
+
+function toggleAllDays(cb){
+  const boxes = document.querySelectorAll('#dayCheckboxes input[type=checkbox]:not(#allDays)');
+  boxes.forEach(b=>b.checked=cb.checked);
+}
+
+function submitForm(){
+  // Save to localStorage (picked up by main app)
+  const apps = JSON.parse(localStorage.getItem('qApp')||'[]');
+  const refNum = 'QA-' + Math.floor(1000 + Math.random()*9000);
+  const app = {
+    id: Date.now(),
+    name: formData.name,
+    phone: formData.phone,
+    age: formData.age,
+    gender: formData.gender,
+    city: formData.city,
+    level: formData.level,
+    day: formData.day,
+    time: formData.time,
+    note: formData.note,
+    ref: refNum,
+    status: 'pending',
+    date: new Date().toLocaleDateString('ur')
+  };
+  apps.push(app);
+  localStorage.setItem('qApp', JSON.stringify(apps));
+
+  // Show success
+  document.getElementById('refNum').textContent = refNum;
+  document.getElementById('successDetail').innerHTML = `
+    نام: <strong style="color:var(--gd)">${formData.name}</strong><br>
+    کورس: <strong style="color:var(--gd)">${formData.level}</strong><br>
+    فیس: <strong style="color:var(--gd)">۵,۵۰۰ روپے ماہانہ</strong><br>
+    دن: <strong style="color:var(--gd)">${formData.day||'—'}</strong>
+  `;
+  setStep(4);
+
+  // Notify teacher via WA
+  const msg = encodeURIComponent(
+    `🔔 نئی داخلہ درخواست!\n\n` +
+    `📛 نام: ${formData.name}\n` +
+    `📱 نمبر: ${formData.phone}\n` +
+    `📖 کورس: ${formData.level}\n` +
+    `📅 دن: ${formData.day||'—'}\n` +
+    `🏙️ شہر: ${formData.city||'—'}\n` +
+    `🔢 ref: ${refNum}`
+  );
+  setTimeout(()=>{ window.open(`https://wa.me/${TEACHER_WA}?text=${msg}`,'_blank'); }, 1500);
+}
+
+function contactWA(){
+  const msg = encodeURIComponent(
+    `السلام علیکم!\nمیں نے داخلہ فارم بھرا ہے۔\nنام: ${formData.name}\nکورس: ${formData.level}\nدرخواست نمبر: ${document.getElementById('refNum').textContent}`
+  );
+  window.open(`https://wa.me/${TEACHER_WA}?text=${msg}`,'_blank');
+}
+
+function goBack(step){ setStep(step); }
+
+function setStep(n){
+  document.querySelectorAll('.form-page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page'+n).classList.add('active');
+  document.querySelectorAll('.step').forEach((s,i)=>{
+    s.classList.remove('active','done');
+    if(i+1 < n) s.classList.add('done');
+    if(i+1 === n) s.classList.add('active');
+  });
+  window.scrollTo(0,0);
+}
+
+function resetForm(){
+  formData={};
+  ['ap-name','ap-phone','ap-age','ap-city','ap-time','ap-note'].forEach(id=>document.getElementById(id).value='');
+  ['ap-gender','ap-level','ap-day'].forEach(id=>document.getElementById(id).value='');
+  setStep(1);
+}
+</script>
+</body>
+</html>
